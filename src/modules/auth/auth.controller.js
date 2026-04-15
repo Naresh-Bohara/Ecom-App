@@ -147,23 +147,39 @@ class AuthController {
         }
     };
 
-    refreshToken = (req, res, next) => {
-        try {
-            const loggedInUser = req.loggedInUser;
-            const payload = { sub: loggedInUser._id };
-            const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "10h" });
-            const refreshToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "15d" });
+    refreshToken = async (req, res, next) => {
+    try {
+        const { refreshToken } = req.body;
 
-            res.json({
-                data: { token, refreshToken },
-                message: "Token refreshed.",
-                status: HttpResponse.success,
+        if (!refreshToken) {
+            return res.status(401).json({
+                data: null,
+                message: "Refresh token not found.",
+                status: "UNAUTHENTICATED",
                 options: null
             });
-        } catch (exception) {
-            next(exception);
         }
-    };
+
+        const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
+
+        const payload = { sub: decoded.sub };
+
+        const newToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "10h" });
+        const newRefreshToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "15d" });
+
+        res.json({
+            data: {
+                token: newToken,
+                refreshToken: newRefreshToken
+            },
+            message: "Token refreshed.",
+            status: HttpResponse.success,
+            options: null
+        });
+    } catch (exception) {
+        next(exception);
+    }
+};
 
     getUserList = async (req, res, next) => {
         try {

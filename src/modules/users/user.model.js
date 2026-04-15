@@ -16,7 +16,7 @@ const UserSchema = new mongoose.Schema({
     },
     phone: String,
     address: {
-        country: { type: String, default: "Deutschland" },
+        country: { type: String, default: "Nepal" },
         company: String,
         street: { type: String, required: true },
         additional: String,
@@ -26,7 +26,7 @@ const UserSchema = new mongoose.Schema({
     billingAddress: {
         firstName: String,
         lastName: String,
-        country: { type: String, default: "Deutschland" },
+        country: { type: String, default: "Nepal" },
         company: String,
         street: String,
         additional: String,
